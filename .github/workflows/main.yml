@@ -39,8 +39,8 @@ jobs:
           context: .
           dockerfiles: ./Dockerfile
           image: mlflow
-          archs: amd64,arm64
-#           push: true
+          variant: arm64
+          push: true
           tags: latest ${{ github.sha }}
 #           labels: |
 #            org.opencontainers.image.source=${{ github.event.repository.html_url }}
