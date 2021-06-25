@@ -1,6 +1,6 @@
 FROM python:3.8-slim-buster
-RUN apt-get update -y && apt-get install -y build-essential libpq-dev
-RUN pip3 install --user mlflow==1.18.0 psycopg2
+RUN apt-get update -y && apt-get install -y build-essential libpq-dev=11.12-0+deb10u1
+RUN pip3 install --user mlflow==1.18.0 psycopg2==2.9.1
 ENV BACKEND_STORE_URI=""
 ENV DEFAULT_ARTIFACT_ROOT="/opt/artifact"
 EXPOSE 80
