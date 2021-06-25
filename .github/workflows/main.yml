@@ -32,6 +32,7 @@ jobs:
         
       -
         name: Buildah push
+        id: build-image
         if: github.event_name == 'scedule' || github.event_name == 'push'
         uses: redhat-actions/buildah-build@v2.5.1
         with:
@@ -51,8 +52,9 @@ jobs:
         id: push-to-registry
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ steps.build-image.outputs.image }}
+          image: mlflow
           tags: ${{ steps.build-image.outputs.tags }}
+#           tags: ${{ steps.build-image.outputs.tags }}
           registry: docker.io/alvarog777
           username: ${{ secrets.REGISTRY_PASSWORD }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
