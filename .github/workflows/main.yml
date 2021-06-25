@@ -33,7 +33,7 @@ jobs:
       -
         name: Buildah push
         id: build-image
-        if: github.event_name == 'scedule' || github.event_name == 'push'
+#         if: github.event_name == 'scedule' || github.event_name == 'push'
         uses: redhat-actions/buildah-build@v2.5.1
         with:
           context: .
