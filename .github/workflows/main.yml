@@ -29,7 +29,7 @@ jobs:
         name: Build Buildah stable
         uses: docker/build-push-action@v2
         with:
-          context: contrib/buildahimage/stable
+          context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: false
@@ -48,7 +48,7 @@ jobs:
         if: github.event_name == 'scedule' || github.event_name == 'push'
         uses: docker/build-push-action@v2
         with:
-          context: contrib/buildahimage/stable
+          context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
