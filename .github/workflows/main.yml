@@ -37,16 +37,27 @@ jobs:
 
       - 
         name: Docker Buildx (build)
-        run: |
-          docker buildx build \
-            --cache-from "type=local,src=/tmp/.buildx-cache" \
-            --cache-to "type=local,dest=/tmp/.buildx-cache" \
-            --platform linux/amd64,linux/arm64 \
-            --output "type=image,push=false" \
-            --build-arg MLFLOW_VERSION=${{ matrix.mlflow-version }} \
-            --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
-            --file ./Dockerfile \
-            .
+        if: steps.cache-primes.outputs.cache-hit
+          run: |
+            docker buildx build \
+              --cache-to "type=local,dest=/tmp/.buildx-cache" \
+              --platform linux/amd64,linux/arm64 \
+              --output "type=image,push=false" \
+              --build-arg MLFLOW_VERSION=${{ matrix.mlflow-version }} \
+              --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
+              --file ./Dockerfile \
+              .
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+          run: |
+            docker buildx build \
+              --cache-from "type=local,src=/tmp/.buildx-cache" \
+              --cache-to "type=local,dest=/tmp/.buildx-cache" \
+              --platform linux/amd64,linux/arm64 \
+              --output "type=image,push=false" \
+              --build-arg MLFLOW_VERSION=${{ matrix.mlflow-version }} \
+              --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
+              --file ./Dockerfile \
+              .
       - 
         name: Login to GitHub Docker Registry
         env:
