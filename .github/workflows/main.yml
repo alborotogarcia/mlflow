@@ -23,7 +23,7 @@ jobs:
         uses: docker/setup-qemu-action@v1.2.0
 
       - 
-        name: Log in to Red Hat Registry
+        name: Log in to Registry
         uses: redhat-actions/podman-login@v1
         with:
           registry: docker.io
