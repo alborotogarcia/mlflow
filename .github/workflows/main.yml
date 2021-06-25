@@ -14,6 +14,9 @@ on:
 jobs:
   multi:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mlflow-version: [ 1.18.0 ]
     steps:
       -
         name: Checkout
@@ -21,43 +24,47 @@ jobs:
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1.2.0
-
-      - 
-        name: Log in to Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASS }}
         
       -
-        name: Buildah push
-        id: build-image
-#         if: github.event_name == 'scedule' || github.event_name == 'push'
-        uses: redhat-actions/buildah-build@v2.5.1
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        id: cache
         with:
-          context: .
-          dockerfiles: ./Dockerfile
-          image: mlflow
-          variant: arm64
-          push: true
-          tags: latest ${{ github.sha }}
-#           labels: |
-#            org.opencontainers.image.source=${{ github.event.repository.html_url }}
-#            org.opencontainers.image.revision=${{ github.sha }}
-      
-      - 
-        name: Push To Registry
-        id: push-to-registry
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: mlflow
-          tags: ${{ steps.build-image.outputs.tags }}
-#           tags: ${{ steps.build-image.outputs.tags }}
-          registry: docker.io/alvarog777
-          username: ${{ secrets.REGISTRY_PASSWORD }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.mlflow-version }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
+      - 
+        name: Docker Buildx (build)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --cache-to "type=local,dest=/tmp/.buildx-cache" \
+            --platform linux/amd64,linux/arm64 \
+            --output "type=image,push=false" \
+            --build-arg MLFLOW_VERSION=${{ matrix.mlflow-version }} \
+            --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
+            --file ./Dockerfile \
+            .
+      - 
+        name: Login to GitHub Docker Registry
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}        
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      -  
+        name: Docker Buildx (push)
+        run: |
+          docker buildx build \
+            --cache-from "type=local,src=/tmp/.buildx-cache" \
+            --platform linux/amd64,linux/arm64 \
+            --output "type=image,push=true" \
+            --build-arg MLFLOW_VERSION=${{ matrix.mlflow-version }} \
+            --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
+            --file ./Dockerfile \
+            .
       - 
         name: Print image url
         run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
