@@ -38,14 +38,14 @@ jobs:
         with:
           context: .
           dockerfiles: ./Dockerfile
+          image: mlflow
           archs: linux/amd64,linux/arm64
-          push: true
+#           push: true
           tags: |
-            alvarogg777/mlflow:latest
-            alvarogg777/mlflow:1.18.0
-          labels: |
-            org.opencontainers.image.source=${{ github.event.repository.html_url }}
-            org.opencontainers.image.revision=${{ github.sha }}
+            tags: latest ${{ github.sha }}
+#           labels: |
+#            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+#            org.opencontainers.image.revision=${{ github.sha }}
       
       - 
         name: Push To Registry
