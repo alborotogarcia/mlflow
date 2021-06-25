@@ -41,8 +41,7 @@ jobs:
           image: mlflow
           archs: linux/amd64,linux/arm64
 #           push: true
-          tags: |
-            tags: latest ${{ github.sha }}
+          tags: latest ${{ github.sha }}
 #           labels: |
 #            org.opencontainers.image.source=${{ github.event.repository.html_url }}
 #            org.opencontainers.image.revision=${{ github.sha }}
