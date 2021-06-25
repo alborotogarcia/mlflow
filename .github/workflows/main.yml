@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - 
-        name: Docker Buildx (build)
+        name: Docker Buildx (clean build)
         if: steps.cache-primes.outputs.cache-hit
         run: |
           docker buildx build \
@@ -47,6 +47,7 @@ jobs:
             --tag alvarogg777/mlflow:${{ matrix.mlflow-version }} \
             --file ./Dockerfile \
             .
+      - name: Docker Buildx (cache build)
         if: steps.cache-primes.outputs.cache-hit != 'true'
         run: |
           docker buildx build \
