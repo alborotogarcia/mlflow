@@ -1,4 +1,4 @@
-FROM docker.io/python:3.9.5-slim-buster
+FROM docker.io/python:3.9.6-slim-buster
 RUN apt-get update -y && apt-get install -y build-essential libpq-dev=11.12-0+deb10u1
 RUN pip3 install mlflow==1.18.0 psycopg2==2.9.1
 ENV BACKEND_STORE_URI=""
