@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mlflow-version: [ 1.19.0 ]
+        mlflow-version: [ 1.20.2 ]
     steps:
       -
         name: Checkout
